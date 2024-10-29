@@ -18,8 +18,6 @@ class Reacher:
         self.num_motors = len(self.motor_IDs)
         print(f"Found {self.num_motors} motors with IDs {self.motor_IDs} with current motor positions {self.get_joint_positions()}")
         
-
-    # The returned joint positions are in degrees
     def get_joint_positions(self):
         joint_positions = np.array(self.dxl_io.get_present_position(self.motor_IDs))
         return np.deg2rad(joint_positions)
