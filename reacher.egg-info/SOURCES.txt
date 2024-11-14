@@ -1,7 +1,5 @@
 README.md
 setup.py
-data/__init__.py
-data/meshes/__init__.py
 reacher.egg-info/PKG-INFO
 reacher.egg-info/SOURCES.txt
 reacher.egg-info/dependency_links.txt
