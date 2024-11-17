@@ -9,25 +9,21 @@ def rotation_matrix(axis, angle):
     """
     Create a 3x3 rotation matrix which rotates about a specific axis.
     """
-    # Ensure the axis is a unit vector
-    axis = np.array(axis)
-    axis = axis / np.linalg.norm(axis)
+    #https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+    cos = math.cos(angle)
+    sin = math.sin(angle)
 
-    # Calculate sine and cosine of the angle
-    cos_angle = np.cos(angle)
-    sin_angle = np.sin(angle)
+    ux, uy, uz = axis
 
-    # Create the cross-product matrix K
-    K = np.array([
-        [0, -axis[2], axis[1]],
-        [axis[2], 0, -axis[0]],
-        [-axis[1], axis[0], 0]
+    r_matrix = np.array([
+        [ux * ux * (1 - cos) + cos, ux * uy * (1 - cos) - uz * sin, ux * uz * (1 - cos) + uy * sin],
+        [uy * ux * (1 - cos) + uz * sin, uy * uy * (1 - cos) + cos, uy * uz * (1 - cos) - ux * sin],
+        [uz * ux * (1 - cos) - uy * sin, uz * uy * (1 - cos) + ux * sin, uz * uz * (1 - cos) + cos]
     ])
 
-    # Compute the rotation matrix
-    rot_mat = np.eye(3) + sin_angle * K + (1 - cos_angle) * np.dot(K, K)
-    
-    return rot_mat
+    return r_matrix
+
+
 
 def homogenous_transformation_matrix(axis, angle, v_A):
     """
@@ -43,38 +39,20 @@ def fk_hip(joint_angles):
     """
     Calculate the xyz coordinates of the hip frame given the joint angles.
     """
-    hip_angle = joint_angles[0]
-    T_hip = homogenous_transformation_matrix([0, 0, 1], hip_angle, [0, HIP_OFFSET, 0])
-    return T_hip
 
 def fk_shoulder(joint_angles):
     """
     Calculate the xyz coordinates of the shoulder frame given the joint angles.
     """
-    hip_angle = joint_angles[0]
-    shoulder_angle = joint_angles[1]
-    T_hip = fk_hip(joint_angles)
-    T_shoulder = homogenous_transformation_matrix([0, 1, 0], shoulder_angle, [UPPER_LEG_OFFSET, 0, 0])
-    T_shoulder_in_base = np.dot(T_hip, T_shoulder)
-    return T_shoulder_in_base
+
 
 def fk_elbow(joint_angles):
     """
     Calculate the xyz coordinates of the elbow frame given the joint angles.
     """
-    shoulder_angle = joint_angles[1]
-    elbow_angle = joint_angles[2]
-    T_shoulder = fk_shoulder(joint_angles)
-    T_elbow = homogenous_transformation_matrix([0, 1, 0], elbow_angle, [LOWER_LEG_OFFSET, 0, 0])
-    T_elbow_in_base = np.dot(T_shoulder, T_elbow)
-    return T_elbow_in_base
+
 
 def fk_foot(joint_angles):
     """
     Calculate the xyz coordinates of the foot given the joint angles.
     """
-    T_elbow = fk_elbow(joint_angles)
-    # Assuming the foot is at the end of the elbow segment, with no additional translation or rotation
-    T_foot = np.eye(4)
-    T_foot_in_base = np.dot(T_elbow, T_foot)
-    return T_foot_in_base
