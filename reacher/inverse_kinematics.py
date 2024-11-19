@@ -1,6 +1,5 @@
 import math
 import numpy as np
-import copy
 from reacher import forward_kinematics
 
 HIP_OFFSET = 0.0335
@@ -59,18 +58,17 @@ def calculate_jacobian_FD(joint_angles, delta):
     pos = forward_kinematics.get_pos(frame)
     angles = joint_angles
 
-    for i in range(3):
-        angles[i] += delta
+    for idx in range(3):
+        angles[idx] += delta
 
         new_frame = forward_kinematics.fk_foot(angles)
         new_pos = forward_kinematics.get_pos(new_frame)
 
         delta_pos = (new_pos - pos) / delta
-        jacobian[0, i] = delta_pos[0]
-        jacobian[1, i] = delta_pos[1]
-        jacobian[2, i] = delta_pos[2]
-
-        angles[i] -= delta
+        jacobian[0,idx] = delta_pos[0]
+        jacobian[1,idx] = delta_pos[1]
+        jacobian[2,idx] = delta_pos[2]
+        angles[idx] -= delta
 
     return jacobian
 
@@ -106,7 +104,7 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         cost = ik_cost(end_effector_pos, guess)
 
         if abs(previous_cost - cost) < TOLERANCE:
-            return guess
+            break
         previous_cost = cost
 
     return guess
