@@ -90,7 +90,7 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         numpy.ndarray: The refined joint angles that achieve the desired end-effector position.
     """
 
-    # Initialize previous cost to infinity
+        # Initialize previous cost to infinity
     previous_cost = np.inf
     # Initialize the current cost to 0.0
     cost = 0.0
